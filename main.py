@@ -13,6 +13,13 @@ from helpers.utils import *
 from mutations import *
 prog = None
 ValidInputs = None
+payload = None
+def segfault_handler(signum, frame):
+    with open("bad.txt", "w") as fp:
+        fp.write(payload)
+    
+    print(f"Ladies and Gentlemen, We got him.\n Payload that crashed program in {output}.")
+    exit(1)
 
 
 def main():
@@ -20,6 +27,8 @@ def main():
         print("Correct Usage: <executable> <binary> <valid_input>")
         exit(1)
 
+
+    signal.signal(signal.SIGSEGV, segfault_handler)
     prog = "./" + sys.argv[0]
     
     ValidInputs = [line for line in open(sys.argv[1], "r")]
