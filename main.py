@@ -18,7 +18,7 @@ def segfault_handler(signum, frame):
     with open("bad.txt", "w") as fp:
         fp.write(payload)
     
-    print(f"Ladies and Gentlemen, We got him.\n Payload that crashed program in {output}.")
+    print(f"Ladies and Gentlemen, We got him.\n Payload that crashed program in bad.txt .")
     exit(1)
 
 
