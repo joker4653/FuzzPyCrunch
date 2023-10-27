@@ -11,9 +11,14 @@ import signal
 from pwn import *
 from helpers.utils import *
 from mutations import *
+
+
 prog = None
 ValidInputs = None
 payload = None
+
+
+
 def segfault_handler(signum, frame):
     with open("bad.txt", "w") as fp:
         fp.write(payload)
@@ -28,22 +33,30 @@ def main():
         exit(1)
 
 
+    context.terminal = ['gnome-terminal', '-x']
+    context.timeout = 60
     signal.signal(signal.SIGSEGV, segfault_handler)
-    prog = "./" + sys.argv[0]
+    prog = "./" + sys.argv[1]
+
+    ValidInputs = [line for line in open(sys.argv[2], "r")]
+
+    mut = mutator("plaintext")
+    while True:
+        p = process(prog)
+
+        pl = mut.chooseMutation(random.choice(ValidInputs))
+        p.sendline(pl)
+        p.close()
     
-    ValidInputs = [line for line in open(sys.argv[1], "r")]
+    #gdbInstance = gdb.attach(ParentProc, """checkpoint
+    #                                        continue""")
 
-    ParentProc = runProg()
 
-    gdb.attach(ParentProc)
-
+    
 def forkNattach(ParentProc):
     pass
 
 
-
-def runProg(prog=None):
-    return process(prog)
 
 
 if __name__ == "__main__":

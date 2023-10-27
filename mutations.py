@@ -9,7 +9,8 @@ class mutator:
         self.currentCoverage = 0
     
     def bitFlip(self, corpus):
-        pass
+                    return str(0)
+
 
     def byteFlip(self, corpus):
         flips = random.randint(1,len(corpus))
@@ -21,27 +22,30 @@ class mutator:
         return corpus
 
     def keywordExtraction(self, corpus):
-        pass
+                return str(0)
+
 
     def magicNumAbuse(self, corpus):
-        pass
+                return str(0)
 
     def CoverageBasedMutation(self, corpus):
-        pass
+                return str(0)
+
 
     def validateInput(self, corpus):
-        pass
+                return str(0)
+
 
     def lengthAbuse(corpus):
         return corpus + "A" * random.randint(1,512)
     
     def chooseMutation(self, corpus):
         rand = random.randint(1,7)
-        newMut = None
+        newMut = str(0)
         if rand == 1:
             newMut = self.bitFlip(corpus)
         elif rand == 2:
-            newMut = self.byteflip(corpus)
+            newMut = self.byteFlip(corpus)
         elif rand == 3:
             newMut = self.keywordExtraction(corpus)
         elif rand == 4:
