@@ -48,14 +48,12 @@ def main():
     mut = factory(checkfileFormat(ValidInputs),ValidInputs)
 
 
-
     while True:
         p = process(prog)
-
-        payload = mut.chooseMutation(ValidInputs)
     
         p.recvline(timeout=0.0000001)
 
+        payload = mut.chooseMutation(ValidInputs)
         p.sendline(payload.encode())
 
         p.proc.stdin.close()

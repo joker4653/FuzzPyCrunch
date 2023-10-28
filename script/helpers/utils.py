@@ -46,13 +46,14 @@ def factory(fileFormat, ValidInputs):
         return mutateJSON(fileFormat, ValidInputs)
     elif format == "csv":
         return mutateCSV(fileFormat, ValidInputs)
+        
     else:
         # return None on unable to identify file format / plaintext
         return mutator("unknown", ValidInputs)
 
 
 
-# Bunch of regex crap to detect different formats
+# Bunch of regex to detect different formats
 
 JSONRegex = ""
 
