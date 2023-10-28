@@ -29,7 +29,7 @@ def segfault_handler(payload):
 
 def main():
     if len(sys.argv) < 2:
-        print("Correct Usage: <executable> <binary> <valid_input>")
+        print("Correct Usage: ./fuzzer <binary> <valid_input>")
         exit(1)
 
     print("\nInfiltrating...\n\n")
