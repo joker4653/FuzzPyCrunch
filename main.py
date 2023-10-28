@@ -19,11 +19,11 @@ payload = None
 
 
 
-def segfault_handler(signum, frame):
+def segfault_handler(payload):
     with open("bad.txt", "w") as fp:
         fp.write(payload)
     
-    print(f"Ladies and Gentlemen, We got him.\n Payload that crashed program in bad.txt .")
+    print(f"Ladies and Gentlemen, We got him.\nPayload that crashed program in bad.txt")
     exit(1)
 
 
@@ -32,21 +32,39 @@ def main():
         print("Correct Usage: <executable> <binary> <valid_input>")
         exit(1)
 
+    print("\nInfiltrating...\n\n")
+
 
     context.terminal = ['gnome-terminal', '-x']
     context.timeout = 60
-    signal.signal(signal.SIGSEGV, segfault_handler)
-    prog = "./" + sys.argv[1]
+    context.log_level = "warning"
 
-    ValidInputs = [line for line in open(sys.argv[2], "r")]
+    prog = './' + sys.argv[1]
 
-    mut = mutator("plaintext")
+    with open(sys.argv[2], "r") as fp:
+        ValidInputs = fp.read()
+
+
+    mut = factory(checkfileFormat(ValidInputs),ValidInputs)
+
+
+
     while True:
         p = process(prog)
 
-        pl = mut.chooseMutation(random.choice(ValidInputs))
-        p.sendline(pl)
+        payload = mut.chooseMutation(ValidInputs)
+    
+        p.recvline(timeout=0.0000001)
+
+        p.sendline(payload.encode())
+
+        p.proc.stdin.close()
+
+        if p.poll(True) == -11:
+            segfault_handler(payload)
+
         p.close()
+        
     
     #gdbInstance = gdb.attach(ParentProc, """checkpoint
     #                                        continue""")
