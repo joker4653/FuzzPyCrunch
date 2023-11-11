@@ -10,7 +10,7 @@ import sys
 import signal
 from pwn import *
 from helpers.utils import *
-from mutations import *
+from mutation.mutations import *
 
 
 prog = None
@@ -39,7 +39,7 @@ def main():
     context.timeout = 60
     context.log_level = "warning"
 
-    prog = './' + sys.argv[1]
+    prog = sys.argv[1]
 
     with open(sys.argv[2], "r") as fp:
         ValidInputs = fp.read()

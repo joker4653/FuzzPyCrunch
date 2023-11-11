@@ -2,8 +2,14 @@ from io import StringIO
 import re
 import json
 import csv
-from mutations import *
-
+import xml.etree.ElementTree as ET
+from mutation.mutations import *
+from mutation.csv import *
+from mutation.elf import *
+from mutation.jpg import *
+from mutation.json import *
+from mutation.pdf import *
+from mutation.xml import *
 
 # bytes which will when added cause integer overflows and funky stuff
 magicbytes = []
@@ -16,6 +22,9 @@ def checkfileFormat(sampleInput):
     
     if checkCSV(sampleInput) == True:
         return 'csv'
+    
+    if checkXML(sampleInput) == True:
+        return 'xml'
 
     return None
 
@@ -29,13 +38,18 @@ def checkJson(sampleInput):
 
 def checkCSV(sampleInput):
     try:
-        csv_file = StringIO(sampleInput)
-        csv.reader(csv_file)
+        csvFile = StringIO(sampleInput)
+        csv.reader(csvFile)
         return True
     except csv.Error:
         return False
 
-
+def checkXML(sampleInput):
+    try:
+        xmlFile = ET.fromstring(sampleInput)
+        return True
+    except:
+        return False
 
 
 def factory(fileFormat, ValidInputs):
@@ -46,6 +60,8 @@ def factory(fileFormat, ValidInputs):
         return mutateJSON(fileFormat, ValidInputs)
     elif format == "csv":
         return mutateCSV(fileFormat, ValidInputs)
+    elif format == "xml":
+        return mutateXML(fileFormat,ValidInputs)
         
     else:
         # return None on unable to identify file format / plaintext
