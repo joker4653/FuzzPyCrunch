@@ -10,7 +10,6 @@ import sys
 import signal
 from pwn import *
 from helpers.utils import *
-from mutation.mutations import *
 
 
 prog = None
@@ -54,7 +53,8 @@ def main():
         p.recvline(timeout=0.0000001)
 
         payload = mut.chooseMutation(ValidInputs)
-        p.sendline(payload.encode())
+        print(payload)
+        p.sendline(str(payload).encode())
 
         p.proc.stdin.close()
 

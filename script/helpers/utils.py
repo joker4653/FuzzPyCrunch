@@ -4,12 +4,12 @@ import json
 import csv
 import xml.etree.ElementTree as ET
 from mutation.mutations import *
-from mutation.csv import *
-from mutation.elf import *
-from mutation.jpg import *
-from mutation.json import *
-from mutation.pdf import *
-from mutation.xml import *
+from mutation.csvFuzz import *
+from mutation.elfFuzz import *
+from mutation.jpgFuzz import *
+from mutation.jsonFuzz import *
+from mutation.pdfFuzz import *
+from mutation.xmlFuzz import *
 
 # bytes which will when added cause integer overflows and funky stuff
 magicbytes = []

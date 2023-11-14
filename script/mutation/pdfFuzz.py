@@ -1,6 +1,7 @@
 import random
-from mutations import *
 
-class mutateELF(mutator):
+
+
+class mutatePDF:
     def validateInput():
         pass

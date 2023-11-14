@@ -1,8 +1,8 @@
 import random
-from mutations import *
 
 
 
-class mutateJPEG(mutator):
+
+class mutateJPEG:
     def validateInput():
         pass
