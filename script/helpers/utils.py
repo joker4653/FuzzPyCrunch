@@ -59,10 +59,8 @@ def factory(fileFormat, ValidInputs):
     if format == "json":
         return mutateJSON(fileFormat, ValidInputs)
     elif format == "xml":
-        print("I AM XML")
         return mutateXML(fileFormat,ValidInputs)
     elif format == "csv":
-        print("I AM CSV")
         return mutateCSV(fileFormat, ValidInputs)
     
         
