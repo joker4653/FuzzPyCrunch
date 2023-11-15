@@ -20,11 +20,11 @@ def checkfileFormat(sampleInput):
     if checkJson(sampleInput) == True:
         return 'json'
     
-    if checkCSV(sampleInput) == True:
-        return 'csv'
-    
     if checkXML(sampleInput) == True:
         return 'xml'
+
+    if checkCSV(sampleInput) == True:
+        return 'csv'
 
     return None
 
@@ -58,16 +58,28 @@ def factory(fileFormat, ValidInputs):
 
     if format == "json":
         return mutateJSON(fileFormat, ValidInputs)
-    elif format == "csv":
-        return mutateCSV(fileFormat, ValidInputs)
     elif format == "xml":
+        print("I AM XML")
         return mutateXML(fileFormat,ValidInputs)
+    elif format == "csv":
+        print("I AM CSV")
+        return mutateCSV(fileFormat, ValidInputs)
+    
         
     else:
         # return None on unable to identify file format / plaintext
         return mutator("unknown", ValidInputs)
 
 
+'Callable from main, start generating mutation through recursion'
+def randMutations(corpus, maxDepth, mutClass):
+    if (maxDepth) == 0:
+        return corpus
+    
+    else:
+        newMut = mutClass.chooseMutation(corpus)
+
+        return randMutations(newMut, maxDepth - 1, mutClass)
 
 # Bunch of regex to detect different formats
 

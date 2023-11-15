@@ -3,7 +3,7 @@
 import random
 import json
 import csv
-
+import string
 class mutator:
     'Base Mutation Class with Generic strategies'
     def __init__(self, fileformat, corpus) -> None:
@@ -12,6 +12,20 @@ class mutator:
         self.lengthModifier = 1
         self.corpus = corpus
     
+
+        self.mutationFunctions = [
+            self.nullInput,
+            self.bitFlip,
+            self.byteFlip,
+            self.lengthAbuse
+
+        ]
+
+
+    def chooseMutation(self, corpus):
+        mut = random.choice(self.mutationFunctions)
+        return mut(corpus)
+
     def nullInput(self, corpus):
         return ""
 
@@ -39,43 +53,17 @@ class mutator:
 
         return flipped_string
 
-    def keywordExtraction(self, corpus):
-                return str(0)
-
-
-    def magicNumAbuse(self, corpus):
-                return str(0)
-
-    def CoverageBasedMutation(self, corpus):
-                return str(0)
-
-
-    def validateInput(self, corpus):
-                return str(0)
-
 
     def lengthAbuse(self, corpus):
         self.lengthModifier = self.lengthModifier + 1
+        if self.lengthModifier == 20:
+            self.lengthModifier = 0
         return corpus + "A" * self.lengthModifier
     
     
-    def chooseMutation(self, corpus):
-        rand = random.randint(1,7)
-        newMut = str(0)
-        if rand == 1:
-            newMut = self.bitFlip(corpus)
-        elif rand == 2:
-            newMut = self.byteFlip(corpus)
-        elif rand == 3:
-            newMut = self.keywordExtraction(corpus)
-        elif rand == 4:
-            newMut = self.nullInput(corpus)
-        elif rand == 5:
-            newMut = self.magicNumAbuse(corpus)
-        elif rand == 6:
-            newMut = self.CoverageBasedMutation(corpus)
-        else:
-            newMut = self.lengthAbuse(corpus)
+    def formatString(self,corpus):
+        # %s will dereference memory if there is a format string vuln.
+        pass
 
-        return newMut
-    
+    def randomCharsAndNums(self, corpus):
+        pass

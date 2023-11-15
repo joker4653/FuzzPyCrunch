@@ -29,19 +29,27 @@ class mutateJSON:
     
 
     def mutateValues(self, corpus):
-        'messes up keys to be unexpected values and types'
+        """messes up keys to be unexpected values and types"""
         dictJson = json.loads(corpus)
-        key_to_update = random.choice(list(dictJson.keys()))
-        dictJson[key_to_update] = random.choice(randVals)
+        if isinstance(dictJson, list):
+            return json.dumps(dictJson)
+        if not dictJson:
+            return json.dumps(dictJson)
+        keyUpdate = random.choice(list(dictJson.keys()))
+        dictJson[keyUpdate] = random.choice(randVals)
         print(dictJson)
         return json.dumps(dictJson)
 
 
 
     def addPairs(self, corpus):
-        'add additional pairs to input'
+        """Add Additional pairs"""
  
         dictJson = json.loads(corpus)
+        if isinstance(dictJson, list):
+            return json.dumps(dictJson)
+        if not dictJson:
+            return json.dumps(dictJson)
         for i in range(0, random.randint(1, 1000)):
             key = str(random.choice(randVals))
             value = random.choice(randVals)
@@ -51,19 +59,22 @@ class mutateJSON:
 
         
     def deletePairs(self, corpus):
-
+        """Deletes random pairs"""
         dictJson = json.loads(corpus)
-        key_to_delete = random.choice(list(dictJson.keys()))
-        del dictJson[key_to_delete]
-        print(dictJson)
+        if isinstance(dictJson, list):
+            return json.dumps(dictJson)
+        if not dictJson:
+            return json.dumps(dictJson)
+        keyDel = random.choice(list(dictJson.keys()))
+        del dictJson[keyDel]
         return json.dumps(dictJson)
     
 
     
     def deepNesting(self, corpus):
-        """ Mutation strategy to deeply nest the JSON object """
+        """ deeply nest the JSON object """
         # Randomly choose a depth for nesting
-        depth = random.randint(2, 500)
+        depth = random.randint(2, 100)
         
         # Function to create nested structure
         def create_nest(obj, currentDepth):
@@ -79,8 +90,9 @@ class mutateJSON:
 
 
     def objectDup(self, corpus):
-        """ Mutation strategy to duplicate entire objects within the JSON """
-        depth = random.randint(2,500)
+        """ duplicate entire objects within the JSON """
+        depth = random.randint(2,100)
+
         def duplicateObject(obj, currDepth):
 
             if currDepth == depth:
@@ -90,11 +102,9 @@ class mutateJSON:
                 if isinstance(obj, dict):
                     # Duplicate the object and recursively apply duplication
                     duplicated = {key: duplicateObject(value) for key, value in obj.items()}
-                    print(obj)
                     return json.dumps({**duplicated, **duplicated})  # Merge the duplicated dictionary with itself
                 elif isinstance(obj, list):
                     # Duplicate each element in the list
-                    print(obj)
                     duplicatedList = [duplicateObject(element) for element in obj]
                     return json.dumps(duplicatedList + duplicatedList)  # Concatenate the duplicated list with itself
                 else:
@@ -105,9 +115,16 @@ class mutateJSON:
     
 
     def typeConf(self, corpus):
+        """Convert the json to a list verse dictionary type confusion"""
         vals = json.loads(corpus)
 
         if isinstance(vals, dict):
             return json.dumps(list(vals))
         else:
-            return json.dumps(dict(vals))
+            print("TYPE CONFUSION WORKING")
+            newDict = {}
+            for index, element in enumerate(vals):
+                newDict[element] = index
+            
+            print(newDict)
+            return json.dumps(newDict)

@@ -8,6 +8,7 @@ import re
 import multiprocessing
 import sys
 import signal
+import os
 from pwn import *
 from helpers.utils import *
 
@@ -43,36 +44,36 @@ def main():
     with open(sys.argv[2], "r") as fp:
         ValidInputs = fp.read()
 
-
+    print(ValidInputs)
     mut = factory(checkfileFormat(ValidInputs),ValidInputs)
-
+    p = process(prog)
+    p.recvline(timeout=0.0000001)
+    p.sendline("".encode())
+    p.proc.stdin.close()
+    if p.poll(True) == -11:
+            segfault_handler(payload)
+            p.close()
 
     while True:
         p = process(prog)
     
         p.recvline(timeout=0.0000001)
 
-        payload = mut.chooseMutation(ValidInputs)
+        payload = randMutations(ValidInputs, random.randint(1,3), mut).rstrip("\n")
         print(payload)
+        
         p.sendline(str(payload).encode())
-
         p.proc.stdin.close()
 
         if p.poll(True) == -11:
             segfault_handler(payload)
-
-        p.close()
-        
-    
-    #gdbInstance = gdb.attach(ParentProc, """checkpoint
-    #                                        continue""")
+            p.close()
 
 
-    
-def forkNattach(ParentProc):
+
+
+def forkNAttach(proc):
     pass
-
-
 
 
 if __name__ == "__main__":

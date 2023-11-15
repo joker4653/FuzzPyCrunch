@@ -1,10 +1,10 @@
 import random
 import string
 import sys
-randVals = [-1000000,-5,-4,-3,-2,-1,0,1, 2, 3, "a", "b", "c", 10000000, sys.maxsize, -sys.maxsize - 1]
+randVals = [-1000000,-5,-4,-3,-2,-1,0,1, 2, 3, "a", "b", "c", 10000000, sys.maxsize, -sys.maxsize - 1, -2**31,2**31-1]
 
-# account for csv type, including headers to keep inputs somewhat reasonable
 class mutateCSV:
+    """Class containing csv specific mutation methods"""
     def __init__(self, fileformat, corpus, rows=None, columns=None) -> None:
         self.fileFormat = fileformat
         self.currentCoverage = 0
@@ -12,8 +12,7 @@ class mutateCSV:
         self.corpus = corpus # not delimited yet
     
         self.mutationFunctions = [
-            self.lineOverflow, 
-            self.mutateDelimeters, 
+            self.lineOverflow,  
             self.integerOverflowFields, 
             self.addRow, 
             self.removeRow, 
@@ -26,40 +25,44 @@ class mutateCSV:
             self.dataValueMutation, 
             self.randomNoiseInsertion, 
             self.encodingErrors,
-            self.patternBasedMutation
+            self.patternBasedMutation,
+            self.mutateDelimeters
         ]
     
 
 
     def chooseMutation(self, corpus):
-        mut = random.choice(self.mutation_functions)
+        mut = random.choice(self.mutationFunctions)
         return mut(corpus)
 
 
-    def emptyStr(self,corpus):
-        return ''
-
-
     def removeDels(self, corpus):
+        """Remove delimeters"""
         strin = corpus.split("\n")
         return "".join(strin) + "\n"
 
 
     def lineOverflow(self, corpus):
+        """Basic buffer overflow"""
         self.lengthModifier = self.lengthModifier + 1
+        if self.lengthModifier > 20:
+            self.lengthModifier = 0
+            return corpus * self.lengthModifier
+
         return corpus * self.lengthModifier
         
 
     
     def addRow(self, corpus):
+        """Add unexpected rows"""
         # Adds a new row to the CSV
-        new_row = ','.join([str(random.choice(randVals)) for i in range(corpus.count(',') // corpus.count('\n'))])
-        return corpus + '\n' + new_row + '\n'
+        newRow = ','.join([str(random.choice(randVals)) for i in range(corpus.count(',') // corpus.count('\n'))])
+        return corpus + '\n' + newRow + '\n'
 
 
 
     def removeRow(self, corpus):
-        # Removes a random row from the CSV
+        """Remove random rows"""
         rows = corpus.split('\n')
         if len(rows) > 1:
             rows.pop(random.randint(0, len(rows) - 1))
@@ -72,7 +75,7 @@ class mutateCSV:
 
 
     def shuffleRows(self, corpus):
-        # Shuffles the rows of the CSV
+        """Randomises row values"""
         rows = corpus.split('\n')
         random.shuffle(rows)
         result = '\n'.join(rows)
@@ -84,7 +87,7 @@ class mutateCSV:
 
 
     def addColumn(self, corpus):
-        # Adds a new column to the CSV
+        """Add extra column to input"""
         rows = corpus.split('\n')
         for i in range(len(rows)):
             rows[i] += ',' + str(random.choice(randVals))
@@ -97,14 +100,20 @@ class mutateCSV:
 
 
     def removeColumn(self, corpus):
-        # Removes a random column from the CSV
-        rows = corpus.split('\n')[:-1]
-        column_count = rows[0].count(',')
-        if column_count > 0:
-            col_index = random.randint(0, column_count)
+        """Remove a column"""
+        rows = [row for row in corpus.split('\n') if row != [] and row != '']
+
+    
+        columnCount = rows[0].count(',')
+        if columnCount > 0:
+            colIndex = random.randint(0, columnCount)
             for i in range(len(rows)):
                 columns = rows[i].split(',')
-                columns.pop(col_index)
+                try:
+                    columns.pop(colIndex)
+                except:
+                    pass
+
                 rows[i] = ','.join(columns)
         result = '\n'.join(rows)
         #print(result)
@@ -115,7 +124,7 @@ class mutateCSV:
 
 
     def shuffleColumns(self, corpus):
-        # Shuffles the columns of the CSV
+        """Shuffles the columns around"""
 
 
         rows = corpus.split('\n')[:-1] # final \n gives empty string, remove it
@@ -129,7 +138,11 @@ class mutateCSV:
         # iterate through rows and then swap values around
         for i in range(len(rows)):
             columns = rows[i].split(',')
-            rows[i] = ','.join([columns[j] for j in colIndices])
+
+            try:
+                rows[i] = ','.join([columns[j] for j in colIndices])
+            except:
+                pass
 
         result = '\n'.join(rows)
         #print(result)
@@ -140,7 +153,7 @@ class mutateCSV:
 
 
     def modifyHeaders(self, corpus):
-        # Modifies the headers of the CSV
+        """Cook the headers"""
         rows = corpus.split('\n')
         if len(rows) > 0:
             headers = rows[0].split(',')
@@ -156,11 +169,12 @@ class mutateCSV:
 
 
     def dataTypeMutation(self, corpus):
-        # Changes the data type of random fields
+        """change data types in rnadom fields"""
         rows = corpus.split('\n')
         for i in range(1, len(rows)):
             columns = rows[i].split(',')
             for j in range(len(columns)):
+                """Check if digit for error sakes"""
                 if columns[j].isdigit() and random.choice([True, False]):
                     columns[j] = str(float(columns[j])) if '.' not in columns[j] else str(int(float(columns[j])))
             rows[i] = ','.join(columns)
@@ -173,7 +187,7 @@ class mutateCSV:
 
 
     def dataValueMutation(self, corpus):
-        # Alters the values within the fields
+        """Just change random vals"""
         rows = corpus.split('\n')
         for i in range(1, len(rows)):
             columns = rows[i].split(',')
@@ -190,7 +204,7 @@ class mutateCSV:
 
 
     def randomNoiseInsertion(self, corpus):
-        # Adds random characters or noise into fields
+        """Add random noise into the inputs"""
         rows = corpus.split('\n')
         for i in range(1, len(rows)):
             columns = rows[i].split(',')
@@ -207,7 +221,7 @@ class mutateCSV:
 
 
     def encodingErrors(self, corpus):
-        # Introduces encoding errors
+        """break the encoding see if there is a parsing error"""
         rows = corpus.split('\n')
         for i in range(1, len(rows)):
             columns = rows[i].split(',')
@@ -224,22 +238,22 @@ class mutateCSV:
 
 
     def mutateDelimeters(self, corpus):
-        # Changes the delimiter of the CSV
-        new_delimiter = random.choice([';', '\t', '|', '.', '\r'])  # Randomly selects a new delimiter
+        """Change the delims up"""
+        newDelimiter = random.choice([';', '\t', '|', '.', '\r'])  # Randomly selects a new delimiter
         new = []
         for row in corpus:
-            new.append(new_delimiter.join(row))
+            new.append(newDelimiter.join(row))
         return str(new) + '\n'
 
 
 
     def integerOverflowFields(self, corpus):
-        # Creates integer overflow in numeric fields
+        """Force integer overflow"""
         newCorpus = ''
         for row in corpus:
             for i in range(len(row)):
                 if row[i].isdigit():
-                    newCorpus += str(int(row[i]) * (10**6))  # Multiplies the integer by a large number
+                    newCorpus += str(int(sys.maxsize))  # Multiplies the integer by a large number
                 else:
                     newCorpus += row[i]
 
@@ -249,7 +263,7 @@ class mutateCSV:
 
 
     def patternBasedMutation(self, corpus):
-        # Introduce specific patterns like unescaped quotes, newlines in fields
+        """Bring in command characters and escape characters"""
         rows = corpus.split('\\n')
         for i in range(len(rows)):
             rows[i] = '\"' + rows[i].replace(',', '\"' + ',' + '\"') + '\"'
