@@ -7,3 +7,4 @@ sudo apt-get install tmux
 sudo apt update
 sudo apt install linux-headers-$(uname -r)
 sudo apt-get install build-essential
+make -f script/Makefile

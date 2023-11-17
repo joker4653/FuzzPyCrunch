@@ -1,9 +1,9 @@
 CC=gcc
 CFLAGS=-fPIC -shared -Wall
-TARGET1=snapshot/snapshot.so
-SOURCE1=snapshot/snapshot.c
-TARGET2=codeCoverage/ptraceDebugger.so
-SOURCE2=codeCoverage/ptraceDebugger.c
+TARGET1=script/snapshot/snapshot.so
+SOURCE1=script/snapshot/snapshot.c
+TARGET2=script/codeCoverage/ptraceDebugger.so
+SOURCE2=script/codeCoverage/ptraceDebugger.c
 all: $(TARGET1) $(TARGET2)
 
 $(TARGET1): $(SOURCE1)
