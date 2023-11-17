@@ -56,8 +56,9 @@ class mutateCSV:
     def addRow(self, corpus):
         """Add unexpected rows"""
         # Adds a new row to the CSV
-        newRow = ','.join([str(random.choice(randVals)) for i in range(corpus.count(',') // corpus.count('\n'))])
-        return corpus + '\n' + newRow + '\n'
+        if (corpus.count('\n') != 0 or corpus.count(',') != 0):
+            newRow = ','.join([str(random.choice(randVals)) for i in range(corpus.count(',') // corpus.count('\n'))])
+        return str(corpus + '\n' + newRow + '\n')
 
 
 
@@ -70,7 +71,7 @@ class mutateCSV:
         #print(result)
 
         # add back final \n which caused issues earlier
-        return result + '\n'
+        return str(result + '\n')
 
 
 
@@ -82,7 +83,7 @@ class mutateCSV:
         #print(result)
 
         # add back final \n which caused issues earlier
-        return result + '\n'
+        return str(result + '\n')
 
 
 
@@ -95,7 +96,7 @@ class mutateCSV:
         #print(result)
 
         # add back final \n which caused issues earlier
-        return result + '\n'
+        return str(result + '\n')
 
 
 
@@ -119,7 +120,7 @@ class mutateCSV:
         #print(result)
 
         # add back final \n which caused issues earlier
-        return result + '\n'
+        return str(result + '\n')
 
 
 
@@ -127,7 +128,7 @@ class mutateCSV:
         """Shuffles the columns around"""
 
 
-        rows = corpus.split('\n')[:-1] # final \n gives empty string, remove it
+        rows = [row for row in corpus.split('\n') if row != [] and row != ''] # final \n gives empty string, remove it
 
         # grab column count then indices, add 1 for final value
         columnCount = rows[0].count(',') 
@@ -148,7 +149,7 @@ class mutateCSV:
         #print(result)
 
         # add back final \n which caused issues earlier
-        return result + '\n'
+        return str(result + '\n')
 
 
 
@@ -164,7 +165,7 @@ class mutateCSV:
         #print(result)
 
         # add back final \n which caused issues earlier
-        return result + '\n'
+        return str(result + '\n')
 
 
 
@@ -182,7 +183,7 @@ class mutateCSV:
         #print(result)
 
         # add back final \n which caused issues earlier
-        return result + '\n'
+        return str(result + '\n')
 
 
 
@@ -199,7 +200,7 @@ class mutateCSV:
         #print(result)
 
         # add back final \n which caused issues earlier
-        return result + '\n'
+        return str(result + '\n')
 
 
 
@@ -216,7 +217,7 @@ class mutateCSV:
         #print(result)
 
         # add back final \n which caused issues earlier
-        return result + '\n'
+        return str(result + '\n')
 
 
 
@@ -233,7 +234,7 @@ class mutateCSV:
         #print(result)
         
         # add back final \n which caused issues earlier
-        return result + '\n'
+        return str(result + '\n')
     
 
 
@@ -258,7 +259,7 @@ class mutateCSV:
                     newCorpus += row[i]
 
         #print(newCorpus)
-        return newCorpus + '\n'
+        return str(newCorpus + '\n')
 
 
 
@@ -266,5 +267,6 @@ class mutateCSV:
         """Bring in command characters and escape characters"""
         rows = corpus.split('\\n')
         for i in range(len(rows)):
-            rows[i] = '\"' + rows[i].replace(',', '\"' + ',' + '\"') + '\"'
-        return '\\n'.join(rows) + '\n'
+            if (random.choice([True,False])):
+                rows[i] = '\"' + rows[i].replace(',', '\"' + ',' + '\"') + '\"'
+        return str('\\n'.join(rows) + '\n')

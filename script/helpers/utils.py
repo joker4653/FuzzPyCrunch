@@ -69,9 +69,10 @@ def factory(fileFormat, ValidInputs):
         return mutator("unknown", ValidInputs)
 
 
-'Callable from main, start generating mutation through recursion'
 def randMutations(corpus, maxDepth, mutClass):
-    if (maxDepth) == 0:
+    """Callable from main, start generating mutation through recursion"""
+
+    if (maxDepth) <= 0:
         return corpus
     
     else:

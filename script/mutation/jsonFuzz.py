@@ -121,7 +121,6 @@ class mutateJSON:
         if isinstance(vals, dict):
             return json.dumps(list(vals))
         else:
-            print("TYPE CONFUSION WORKING")
             newDict = {}
             for index, element in enumerate(vals):
                 newDict[element] = index

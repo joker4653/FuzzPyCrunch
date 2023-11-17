@@ -8,18 +8,21 @@ import re
 import multiprocessing
 import sys
 import signal
+import ctypes
 import os
 from pwn import *
 from helpers.utils import *
-
+from cDefinitions import *
 
 prog = None
 ValidInputs = None
 payload = None
 
+def setupCSharedObjects():
+    pass
 
 
-def segfault_handler(payload):
+def segfaultHandler(payload):
     with open("bad.txt", "w") as fp:
         fp.write(payload)
     
@@ -35,7 +38,6 @@ def main():
     print("\nInfiltrating...\n\n")
 
 
-    context.terminal = ['gnome-terminal', '-x']
     context.timeout = 60
     context.log_level = "warning"
 
@@ -51,7 +53,7 @@ def main():
     p.sendline("".encode())
     p.proc.stdin.close()
     if p.poll(True) == -11:
-            segfault_handler(payload)
+            segfaultHandler(payload)
             p.close()
 
     while True:
@@ -66,7 +68,7 @@ def main():
         p.proc.stdin.close()
 
         if p.poll(True) == -11:
-            segfault_handler(payload)
+            segfaultHandler(payload)
             p.close()
 
 
