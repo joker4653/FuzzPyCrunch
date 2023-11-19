@@ -1,7 +1,10 @@
 from io import StringIO
+from io import BytesIO
+
 import re
 import json
 import csv
+from PIL import Image
 import xml.etree.ElementTree as ET
 from mutation.mutations import *
 from mutation.csvFuzz import *
@@ -26,6 +29,9 @@ def checkfileFormat(sampleInput):
     if checkCSV(sampleInput) == True:
         return 'csv'
 
+    if checkJPEG(sampleInput) == True:
+        return 'jpeg'
+    
     return None
 
 def checkJson(sampleInput):
@@ -37,6 +43,8 @@ def checkJson(sampleInput):
 
 
 def checkCSV(sampleInput):
+    if isinstance(sampleInput, bytes):
+        return False
     try:
         csvFile = StringIO(sampleInput)
         csv.reader(csvFile)
@@ -45,12 +53,21 @@ def checkCSV(sampleInput):
         return False
 
 def checkXML(sampleInput):
+    if isinstance(sampleInput, bytes):
+        return False
     try:
         xmlFile = ET.fromstring(sampleInput)
         return True
     except:
         return False
 
+def checkJPEG(sampleInput):
+    try:
+
+        with Image.open(BytesIO(sampleInput)) as img:
+            return True
+    except:
+        return False
 
 def factory(fileFormat, ValidInputs):
     format = checkfileFormat(ValidInputs)
@@ -62,6 +79,8 @@ def factory(fileFormat, ValidInputs):
         return mutateXML(fileFormat,ValidInputs)
     elif format == "csv":
         return mutateCSV(fileFormat, ValidInputs)
+    elif format == "jpeg":
+        return mutateJPEG(fileFormat,ValidInputs)
     
         
     else:

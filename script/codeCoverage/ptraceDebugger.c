@@ -12,17 +12,17 @@
 
 
 // get registers of a pid. For use when setting breakpoints
-struct user_regs_struct get_registers(pid_t pwntools_process_pid, struct user_regs_struct regs) {
+struct user_regs_struct get_registers(pid_t pwntools_process_pid, struct user_regs_struct *regs) {
     errno = 0;
-    int err = ptrace(PT_GETREGS, pwntools_process_pid, 0,&regs);
+    int err = ptrace(PT_GETREGS, pwntools_process_pid, 0,regs);
 
     if (err == -1) {fprintf(stderr, "Error getting registers <ptrace>"); exit(errno);}
 
-    return regs;
+    return *regs;
 }
 
 // set registers of a pid. For use when setting breakpoints
-void set_registers(pid_t pwntools_process_pid, struct user_regs_struct regs) {
+void set_registers(pid_t pwntools_process_pid, struct user_regs_struct *regs) {
     errno = 0;
     int err = ptrace(PT_SETREGS, pwntools_process_pid, 0, &regs);
 
@@ -68,11 +68,18 @@ void pause_prog(pid_t pwntools_process_pid) {
     errno = 0;
     int status;
 
+    // gotta fork so that one is looking at the ptrace and another
+    // does normal operations
     // pause prog for looking at memory
+    printf("pausing program...");
     int err = ptrace(PTRACE_ATTACH, pwntools_process_pid, NULL, NULL);
+
     if (err == -1 && errno != 0 ) {fprintf(stderr, "error attaching to prog <ptrace>"); exit(errno);}
 
     waitpid(pwntools_process_pid, &status, 0);
+    if (!WIFSTOPPED(status)) {
+        fprintf(stderr, "error attaching to prog <ptrace>"); exit(errno);
+    }
 }
 
 

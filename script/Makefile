@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-fPIC -shared -Wall
+CFLAGS=-fPIC -shared -Wall -Wextra
 TARGET1=script/snapshot/snapshot.so
 SOURCE1=script/snapshot/snapshot.c
 TARGET2=script/codeCoverage/ptraceDebugger.so

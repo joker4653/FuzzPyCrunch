@@ -58,7 +58,9 @@ class mutateCSV:
         # Adds a new row to the CSV
         if (corpus.count('\n') != 0 or corpus.count(',') != 0):
             newRow = ','.join([str(random.choice(randVals)) for i in range(corpus.count(',') // corpus.count('\n'))])
-        return str(corpus + '\n' + newRow + '\n')
+            return str(corpus + '\n' + newRow + '\n')
+        else:
+            return corpus
 
 
 
@@ -103,25 +105,26 @@ class mutateCSV:
     def removeColumn(self, corpus):
         """Remove a column"""
         rows = [row for row in corpus.split('\n') if row != [] and row != '']
+        
+        try:
+            columnCount = rows[0].count(',')
+            if columnCount > 0:
+                colIndex = random.randint(0, columnCount)
+                for i in range(len(rows)):
+                    columns = rows[i].split(',')
+                    try:
+                        columns.pop(colIndex)
+                    except:
+                        pass
 
-    
-        columnCount = rows[0].count(',')
-        if columnCount > 0:
-            colIndex = random.randint(0, columnCount)
-            for i in range(len(rows)):
-                columns = rows[i].split(',')
-                try:
-                    columns.pop(colIndex)
-                except:
-                    pass
+                    rows[i] = ','.join(columns)
+            result = '\n'.join(rows)
+            #print(result)
 
-                rows[i] = ','.join(columns)
-        result = '\n'.join(rows)
-        #print(result)
-
-        # add back final \n which caused issues earlier
-        return str(result + '\n')
-
+            # add back final \n which caused issues earlier
+            return str(result + '\n')
+        except:
+            return corpus
 
 
     def shuffleColumns(self, corpus):
@@ -131,26 +134,28 @@ class mutateCSV:
         rows = [row for row in corpus.split('\n') if row != [] and row != ''] # final \n gives empty string, remove it
 
         # grab column count then indices, add 1 for final value
-        columnCount = rows[0].count(',') 
-        colIndices = list(range(columnCount + 1))
+        try:
+            columnCount = rows[0].count(',') 
+            colIndices = list(range(columnCount + 1))
 
-        random.shuffle(colIndices)
+            random.shuffle(colIndices)
 
-        # iterate through rows and then swap values around
-        for i in range(len(rows)):
-            columns = rows[i].split(',')
+            # iterate through rows and then swap values around
+            for i in range(len(rows)):
+                columns = rows[i].split(',')
 
-            try:
-                rows[i] = ','.join([columns[j] for j in colIndices])
-            except:
-                pass
+                try:
+                    rows[i] = ','.join([columns[j] for j in colIndices])
+                except:
+                    pass
 
-        result = '\n'.join(rows)
-        #print(result)
+            result = '\n'.join(rows)
+            #print(result)
 
-        # add back final \n which caused issues earlier
-        return str(result + '\n')
-
+            # add back final \n which caused issues earlier
+            return str(result + '\n')
+        except:
+            return corpus
 
 
     def modifyHeaders(self, corpus):
@@ -241,9 +246,9 @@ class mutateCSV:
     def mutateDelimeters(self, corpus):
         """Change the delims up"""
         newDelimiter = random.choice([';', '\t', '|', '.', '\r'])  # Randomly selects a new delimiter
-        new = []
+        new = ""
         for row in corpus:
-            new.append(newDelimiter.join(row))
+            new += newDelimiter.join(row)
         return str(new) + '\n'
 
 
@@ -269,4 +274,5 @@ class mutateCSV:
         for i in range(len(rows)):
             if (random.choice([True,False])):
                 rows[i] = '\"' + rows[i].replace(',', '\"' + ',' + '\"') + '\"'
+        
         return str('\\n'.join(rows) + '\n')

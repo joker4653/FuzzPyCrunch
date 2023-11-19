@@ -37,7 +37,6 @@ class mutateJSON:
             return json.dumps(dictJson)
         keyUpdate = random.choice(list(dictJson.keys()))
         dictJson[keyUpdate] = random.choice(randVals)
-        print(dictJson)
         return json.dumps(dictJson)
 
 
@@ -72,7 +71,7 @@ class mutateJSON:
 
     
     def deepNesting(self, corpus):
-        """ deeply nest the JSON object """
+        """ deeply nest the JSON"""
         # Randomly choose a depth for nesting
         depth = random.randint(2, 100)
         
@@ -90,7 +89,7 @@ class mutateJSON:
 
 
     def objectDup(self, corpus):
-        """ duplicate entire objects within the JSON """
+        """duplicate entire objects within the JSON"""
         depth = random.randint(2,100)
 
         def duplicateObject(obj, currDepth):
@@ -125,5 +124,6 @@ class mutateJSON:
             for index, element in enumerate(vals):
                 newDict[element] = index
             
-            print(newDict)
+
+    
             return json.dumps(newDict)

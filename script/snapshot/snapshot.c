@@ -20,6 +20,7 @@ int rdwr_offsets[MAX_ARRAY_SIZE]; // increments in index 2s see implementation l
 // responsible for creating a snapshot
 // finds memory regions related to binary and copies them to malloc'd memory
 unsigned char* create_snapshot(pid_t pwntools_process_pid) {
+    //printf("creaint snapshot");
     errno = 0;
     int counter = 1;
 
@@ -30,14 +31,17 @@ unsigned char* create_snapshot(pid_t pwntools_process_pid) {
 
 
     // get memory map of the process
-    FILE *addr_fp; //*offset_fp;
-    char line[256];
-    // bash filtering to get only address
-    addr_fp = popen("cat /proc/%d/maps | grep rw | awk '{split($1,a,\"-\"); print a[1] \"\n\" a[2]}'", "r");
-    //offset_fp = popen("cat /proc/%d/maps | grep rw | awk '{print $5}'", "r");
-    if (addr_fp == NULL) {fprintf(stderr, "addrfp failed"); exit(errno);}
-    char *end;
+    char proc_map[0x50] = {};
 
+    //popen cant use format string so workaround:
+    sprintf(proc_map, "cat /proc/%d/maps | grep rw | awk '{split($1,a,\"-\"); print a[1]; print a[2]}'", pwntools_process_pid);
+
+    FILE *addr_fp = popen(proc_map, "r");
+    
+    if (addr_fp == NULL) {fprintf(stderr, "open map"); exit(errno);}
+    
+    char *end;
+    char line[0x50] = {};
     while (fgets(line, sizeof(line), addr_fp)) {
         // grab map addrs for rw that could change on every fuzz iteration
         if (counter % 2 == 0) {

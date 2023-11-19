@@ -11,16 +11,13 @@ class mutateXML:
         self.lengthModifier = 1
         self.corpus = corpus
         self.root = ET.parse(sys.argv[2])
-        self.parentMap = {child: parent for parent in self.root.iter() for child in parent}
 
         self.mutationFunctions = [
             self.insertRandomNodes,
             self.removeRandomAttributes,
             self.changeTagNames,
-            self.duplicateNodes,
             self.invertNodeOrder,
             self.replaceTextContent,
-            self.removeRandomNodes,
             self.randomEncoding,
             self.changeCommentStructure,
         ]
@@ -75,22 +72,6 @@ class mutateXML:
             return corpus
 
 
-
-    def removeRandomNodes(self, corpus):
-        """Remove random nodes from the XML"""
-        try:
-            root = ET.fromstring(corpus)
-            all_nodes = list(root.iter())
-            for _ in range(random.randint(1, 3)):
-                node_to_remove = random.choice(all_nodes)
-                parent = root if node_to_remove is root else self.parentMap[node_to_remove]
-                parent.remove(node_to_remove)
-            return ET.tostring(root, encoding='unicode')
-        except ET.ParseError:
-            return corpus
-
-
-
     def removeRandomAttributes(self, corpus):
         """Remove random attributes from nodes in the XML"""
         try:
@@ -116,19 +97,6 @@ class mutateXML:
             return corpus
 
 
-
-    def duplicateNodes(self, corpus):
-        """Duplicate random nodes in the XML"""
-        try:
-            root = ET.fromstring(corpus)
-            all_nodes = list(root.iter())
-            for _ in range(random.randint(1, 3)):
-                node_to_duplicate = random.choice(all_nodes)
-                parent = root if node_to_duplicate is root else self.parentMap[node_to_duplicate]
-                parent.append(copy.deepcopy(node_to_duplicate))
-            return ET.tostring(root, encoding='unicode')
-        except ET.ParseError:
-            return corpus
 
 
     def insertRandomNodes(self, corpus):
